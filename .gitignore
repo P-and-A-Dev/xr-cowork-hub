@@ -1,0 +1,25 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uild*/
+[Bb]uilds/
+[Oo]bj/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+*.csproj
+*.sln
+*.user
+*.unityproj
+*.pidb
+*.booproj
+
+# VSCode / Rider
+.vscode/
+.idea/
+
+# Node / Firebase
+node_modules/
+firebase-backend/.firebase/
+firebase-backend/lib/
+firebase-backend/dist/
