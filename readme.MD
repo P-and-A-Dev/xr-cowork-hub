@@ -24,6 +24,14 @@ Designed for the **Meta Start Developer Competition**, the project focuses on:
 
 # 📦 Features
 
+### 🚀 Features list
+
+- 🇺🇸 **English Version**  
+  [Read the English feature list](features/feature-list.en.md)
+
+- 🇵🇹 **Portuguese Version (Portugal)**  
+  [Ler a lista de funcionalidades](features/feature-list.pt.md)
+
 ### 🧭 Passthrough MR Room
 
 * See your real environment using Quest Passthrough.
@@ -307,6 +315,14 @@ Open MainScene → Play.
 ---
 
 # 🔮 Roadmap
+
+### 📋 Tasklist
+
+- 🇺🇸 **English Version**  
+  [Read the English tasklist](tasks/tasks.en.md)
+
+- 🇵🇹 **Portuguese Version (Portugal)**  
+  [Ler a lista de tarefas](tasks/tasks.pt.md)
 
 ### MVP
 
