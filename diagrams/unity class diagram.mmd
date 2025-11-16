@@ -1,0 +1,92 @@
+---
+config:
+  layout: elk
+  theme: neo-dark
+  look: neo
+---
+classDiagram
+    class RoomManager {
+        +string roomId
+        +bool isConnected
+        +JoinRoom(roomId)
+        +LeaveRoom()
+        +LoadInitialState()
+    }
+    class PanelManager {
+        +List~Panel~ panels
+        +CreatePanel(data)
+        +UpdatePanel(panel)
+        +DeletePanel(panelId)
+        +ApplyRemoteUpdate(data)
+    }
+    class ParticipantManager {
+        +List~Participant~ participants
+        +SetOnlineStatus(userId, online)
+        +UpdateVoiceGroup(userId, groupId)
+        +ApplyRemoteUpdate(data)
+    }
+    class FocusBubbleManager {
+        +int currentGroupId
+        +CreateBubble(members)
+        +CloseBubble()
+        +IsInSameBubble(a, b)
+    }
+    class BubbleSpaceManager {
+        +SpawnBubbleDome(members)
+        +DespawnBubbleDome()
+        +ApplyOcclusionForOthers()
+    }
+    class FirestoreService {
+        +ListenCollection(path, callback)
+        +ListenDocument(path, callback)
+        +SetDocument(path, data)
+        +UpdateDocument(path, data)
+    }
+    class AgoraVoiceManager {
+        +JoinGlobalChannel(roomId)
+        +JoinGroupChannel(groupId)
+        +LeaveCurrentChannel()
+        +MuteUser(userId, muted)
+    }
+    class Panel {
+        +string id
+        +string roomId
+        +string type
+        +string title
+        +string content
+        +string visibility
+        +int bubbleGroupId
+        +Vector3 position
+        +Quaternion rotation
+        +Vector3 scale
+    }
+    class Participant {
+        +string userId
+        +string displayName
+        +bool isOnline
+        +int voiceGroupId
+        +bool inBubbleSpace
+        +DateTime lastSeen
+    }
+    class RoomContext {
+        +string roomId
+        +List~Panel~ panels
+        +List~Participant~ participants
+    }
+    RoomManager --> PanelManager
+    RoomManager --> ParticipantManager
+    RoomManager --> FocusBubbleManager
+    RoomManager --> BubbleSpaceManager
+    RoomManager --> FirestoreService
+    RoomManager --> AgoraVoiceManager
+    PanelManager --> Panel
+    ParticipantManager --> Participant
+    RoomContext --> Panel
+    RoomContext --> Participant
+    FocusBubbleManager --> Participant
+    BubbleSpaceManager --> Participant
+    PanelManager --> FirestoreService
+    ParticipantManager --> FirestoreService
+    FocusBubbleManager --> FirestoreService
+    BubbleSpaceManager --> FirestoreService
+    FocusBubbleManager --> AgoraVoiceManager
