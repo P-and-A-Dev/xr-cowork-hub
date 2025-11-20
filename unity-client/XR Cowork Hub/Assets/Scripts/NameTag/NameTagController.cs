@@ -1,23 +1,26 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
-public class NameTagController : MonoBehaviour
+namespace NameTag
 {
-    [Header("References")]
-    public TMP_Text userNameText;
-    public TMP_Text userStateText;
-
-    // User namee defien
-    public void SetName(string name)
+    public class NameTagController : MonoBehaviour
     {
-        if (userNameText != null)
-            userNameText.text = name;
-    }
+        [Header("References")]
+        public TMP_Text userNameText;
+        public TMP_Text userStateText;
 
-    // what the user is doing
-    public void SetState(string state)
-    {
-        if (userStateText != null)
-            userStateText.text = state;
+        // Define the name of the user
+        public void SetName(string userName)
+        {
+            if (userNameText != null)
+                userNameText.text = userName;
+        }
+
+        // Define the state of the user
+        public void SetState(string state)
+        {
+            if (userStateText != null)
+                userStateText.text = state;
+        }
     }
 }
