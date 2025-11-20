@@ -80,3 +80,5 @@ Thumbs.db
 
 # Google Version Handler
 **/GvhProjectSettings.xml
+# Firebase Unity plugins
+unity-client/XR Cowork Hub/Assets/Firebase/Plugins/
