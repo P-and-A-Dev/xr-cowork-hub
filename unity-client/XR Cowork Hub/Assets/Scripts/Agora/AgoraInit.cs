@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using Agora.Rtc;
 
 public class AgoraInit : MonoBehaviour
@@ -45,4 +45,4 @@ public class AgoraInit : MonoBehaviour
             rtcEngine.Dispose();
         }
     }
-}
+}*/

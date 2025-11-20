@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
@@ -42,3 +42,4 @@ public class FirebaseInit : MonoBehaviour
         });
     }
 }
+*/
