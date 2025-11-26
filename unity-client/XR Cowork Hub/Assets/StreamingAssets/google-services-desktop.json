@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "457087528716",
+    "project_id": "xr-cowork-hub",
+    "storage_bucket": "xr-cowork-hub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457087528716:android:7ab2851f60139befb72329",
+        "android_client_info": {
+          "package_name": "com.xr.coworkhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8iAq4RS2AOdh1lraqcyilgo4v2Kzaa7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
