@@ -85,7 +85,7 @@ public class ParticipantManager : MonoBehaviour
     private string roomId = "test-room";
     private string userId;
     private Participant localParticipant;
-
+    public Participant LocalParticipant => localParticipant;
     void Start()
     {
         LoadOrCreateUserId();               
