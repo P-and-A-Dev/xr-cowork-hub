@@ -71,29 +71,43 @@ using System.Collections;
 using System.Collections.Generic;
 using Firebase.Firestore;
 
+/// <summary>
+/// Manages all participant-related behaviors such as presence,
+/// Firestore syncing, join/leave detection and local user state.
+/// </summary>
 public class ParticipantManager : MonoBehaviour
 {
     public FirestoreService firestore;
     public event Action<List<Participant>> OnParticipantsUpdated;
 
-    //add to avatarverso integration
-    public event Action<Participant> OnParticipantJoined;   // send a call when someone go in
-    public event Action<Participant> OnParticipantLeft;     //send a sinal when some one go out 
-    //// Stores the previous list of participants to detect changes
-    private Dictionary<string, Participant> previousParticipants = new Dictionary<string, Participant>();
+    public event Action<Participant> OnParticipantJoined;
+    public event Action<Participant> OnParticipantLeft;
 
-    private string roomId = "test-room";
+    private Dictionary<string, Participant> previousParticipants = new Dictionary<string, Participant>();
+    private ListenerRegistration participantsListener;
+
+    [SerializeField] private string roomId = "main-room";
+    [SerializeField] private float heartbeatInterval = 3f;
+
     private string userId;
     private Participant localParticipant;
     public Participant LocalParticipant => localParticipant;
+
+    /// <summary>
+    /// Initializes local user, sets presence, listens to Firestore participants
+    /// and starts the presence heartbeat routine.
+    /// </summary>
     void Start()
     {
         LoadOrCreateUserId();               
         CreateOrUpdateLocalParticipant();   
         ListenToParticipants();             
-        StartCoroutine(PresenceHeartbeat()); // Keep updating presence
+        StartCoroutine(PresenceHeartbeat());
     }
 
+    /// <summary>
+    /// Loads or creates a stable local userId.
+    /// </summary>
     void LoadOrCreateUserId()
     {
         if (PlayerPrefs.HasKey("userId"))
@@ -107,7 +121,9 @@ public class ParticipantManager : MonoBehaviour
         Debug.Log("Local userId: " + userId);
     }
 
-    // Create or update the participant document in firestore
+    /// <summary>
+    /// Creates or updates the local participant document in Firestore.
+    /// </summary>
     async void CreateOrUpdateLocalParticipant()
     {
         localParticipant = new Participant
@@ -126,62 +142,49 @@ public class ParticipantManager : MonoBehaviour
         Debug.Log("Participant document created or updated.");
     }
 
-    // List participants in the room
+    /// <summary>
+    /// Begins listening to participant updates from Firestore.
+    /// </summary>
     void ListenToParticipants()
     {
-        firestore.ListenCollection<Participant>(
+        participantsListener = firestore.ListenCollection<Participant>(
             $"rooms/{roomId}/participants",
             OnParticipantsChanged
         );
     }
 
-    // Callback
+    /// <summary>
+    /// Handles participant list changes, join/leave detection,
+    /// and fires the OnParticipantsUpdated event.
+    /// </summary>
     void OnParticipantsChanged(List<Participant> participants)
     {
         Debug.Log("Participants updated. Total: " + participants.Count);
         OnParticipantsUpdated?.Invoke(participants);
         
-        foreach (var p in participants)
-        {
-            Debug.Log($"{p.displayName} | online={p.isOnline} | group={p.voiceGroupId}");
-        }
-
-
-        // create new dicionary
         Dictionary<string, Participant> currentDict = new Dictionary<string, Participant>();
         foreach (var p in participants)
             currentDict[p.userId] = p;
 
-        // Listen who enter
         foreach (var kv in currentDict)
-        {
             if (!previousParticipants.ContainsKey(kv.Key))
-            {
-                Debug.Log($"[Participants] JOINED → {kv.Key}");
                 OnParticipantJoined?.Invoke(kv.Value);
-            }
-        }
 
-        // listen who go uot
         foreach (var kv in previousParticipants)
-        {
             if (!currentDict.ContainsKey(kv.Key))
-            {
-                Debug.Log($"[Participants] LEFT → {kv.Key}");
                 OnParticipantLeft?.Invoke(kv.Value);
-            }
-        }
 
-        // Update 
         previousParticipants = currentDict;
-        }
+    }
 
-    // Update presence every 'x' seconds
+    /// <summary>
+    /// Repeatedly updates presence and lastSeen timestamps on Firestore.
+    /// </summary>
     IEnumerator PresenceHeartbeat()
     {
         while (true)
         {
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(heartbeatInterval);
 
             string path = $"rooms/{roomId}/participants/{userId}";
 
@@ -193,8 +196,6 @@ public class ParticipantManager : MonoBehaviour
         }
     }
 
-
-    // cleanup to evitate ghosts 
     async void CleanupPresence()
     {
         string path = $"rooms/{roomId}/participants/{userId}";
@@ -210,21 +211,19 @@ public class ParticipantManager : MonoBehaviour
         Debug.Log("CleanupPresence: Participant marked offline.");
     }
 
-
-    //applications quit
     void OnApplicationQuit()
     {
-        Debug.Log("OnApplicationQuit -> Cleaning up presence...");
         CleanupPresence();
     }
 
-    //standybY when you take off the glasses
     void OnApplicationPause(bool pause)
     {
         if (pause)
-        {
-            Debug.Log("OnApplicationPause -> Cleaning up presence...");
             CleanupPresence();
-        }
+    }
+
+    void OnDestroy()
+    {
+        participantsListener?.Stop();
     }
 }
