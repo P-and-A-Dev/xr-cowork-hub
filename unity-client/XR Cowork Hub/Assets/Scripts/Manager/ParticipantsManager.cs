@@ -7,7 +7,7 @@ using Firebase.Firestore;
 public class ParticipantManager : MonoBehaviour
 {
     public FirestoreService firestore;
-
+    public event Action<List<Participant>> OnParticipantsUpdated;
     private string roomId = "test-room";
     private string userId;
     private Participant localParticipant;
@@ -65,7 +65,7 @@ public class ParticipantManager : MonoBehaviour
     void OnParticipantsChanged(List<Participant> participants)
     {
         Debug.Log("Participants updated. Total: " + participants.Count);
-
+        OnParticipantsUpdated?.Invoke(participants);
         foreach (var p in participants)
         {
             Debug.Log($"{p.displayName} | online={p.isOnline} | group={p.voiceGroupId}");
