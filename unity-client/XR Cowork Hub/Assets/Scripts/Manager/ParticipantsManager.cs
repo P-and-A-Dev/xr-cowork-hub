@@ -33,7 +33,7 @@ public class ParticipantManager : MonoBehaviour
         Debug.Log("Local userId: " + userId);
     }
 
-    //Create or update the participant document in firestore
+    // Create or update the participant document in firestore
     async void CreateOrUpdateLocalParticipant()
     {
         localParticipant = new Participant
@@ -66,6 +66,7 @@ public class ParticipantManager : MonoBehaviour
     {
         Debug.Log("Participants updated. Total: " + participants.Count);
         OnParticipantsUpdated?.Invoke(participants);
+        
         foreach (var p in participants)
         {
             Debug.Log($"{p.displayName} | online={p.isOnline} | group={p.voiceGroupId}");
@@ -86,6 +87,42 @@ public class ParticipantManager : MonoBehaviour
                 lastSeen = Timestamp.GetCurrentTimestamp(),
                 isOnline = true
             });
+        }
+    }
+
+
+    // cleanup to evitate ghosts 
+
+    async void CleanupPresence()
+    {
+        string path = $"rooms/{roomId}/participants/{userId}";
+
+        await firestore.SetDocument(path, new
+        {
+            isOnline = false,
+            voiceGroupId = 0,
+            inBubbleSpace = false,
+            lastSeen = Timestamp.GetCurrentTimestamp()
+        });
+
+        Debug.Log("CleanupPresence: Participant marked offline.");
+    }
+
+
+//applications quit
+    void OnApplicationQuit()
+    {
+        Debug.Log("OnApplicationQuit -> Cleaning up presence...");
+        CleanupPresence();
+    }
+
+    //StandyBY when you take off the glasses
+    void OnApplicationPause(bool pause)
+    {
+        if (pause)
+        {
+            Debug.Log("OnApplicationPause -> Cleaning up presence...");
+            CleanupPresence();
         }
     }
 }
