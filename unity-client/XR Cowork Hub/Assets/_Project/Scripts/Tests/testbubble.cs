@@ -1,24 +1,36 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+using _Project.Scripts.Manager;
+using UnityEngine;
 
-public class FocusBubbleTest : MonoBehaviour
+namespace _Project.Scripts.Tests
 {
-    public FirestoreService firestore;
-
-    async void Start()
+    public class FocusBubbleTest : MonoBehaviour
     {
-        Debug.Log("Focus Bubble test started.");
+        public FirestoreService firestore;
 
-        List<string> ids = new List<string>
+        private async void Start()
         {
-            "user-1",
-            "user-2"
-        };
+            try
+            {
+                Debug.Log("Focus Bubble test started.");
 
-        long groupId = System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                List<string> ids = new List<string>
+                {
+                    "user-1",
+                    "user-2"
+                };
 
-        await firestore.UpdateVoiceGroup("test-room", ids, groupId);
+                long groupId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-        Debug.Log("Focus Bubble applied to Firestore.");
+                await firestore.UpdateVoiceGroup("test-room", ids, groupId);
+
+                Debug.Log("Focus Bubble applied to Firestore.");
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
     }
 }

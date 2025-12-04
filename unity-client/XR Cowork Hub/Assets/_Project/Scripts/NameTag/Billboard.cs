@@ -6,12 +6,12 @@ namespace _Project.Scripts.NameTag
     {
         private Camera _cam;
 
-        void Start()
+        private void Start()
         {
             _cam = Camera.main;
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             if (_cam is null) return;
 

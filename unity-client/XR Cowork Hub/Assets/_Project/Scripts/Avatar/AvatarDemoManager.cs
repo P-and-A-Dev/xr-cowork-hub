@@ -1,95 +1,89 @@
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using _Project.Scripts.Manager;
+using UnityEngine;
 
-public class AvatarDemoManager : MonoBehaviour
+namespace _Project.Scripts.Avatar
 {
-    [Header("Dependencies")]
-    public ParticipantManager participantManager;   
-    [Header("Avatar Prefab")]
-    public GameObject avatarPrefab;
-
-    // Store active avatars by userId
-    private Dictionary<string, GameObject> avatars = new Dictionary<string, GameObject>();
-
-
-    void Start()
+    public class AvatarDemoManager : MonoBehaviour
     {
-        // Subscribe to ParticipantManager events
-        participantManager.OnParticipantJoined += OnParticipantJoined;
-        participantManager.OnParticipantLeft += OnParticipantLeft;
-        participantManager.OnParticipantsUpdated += OnParticipantsUpdated;
-    }
+        [Header("Dependencies")] public ParticipantManager participantManager;
+        [Header("Avatar Prefab")] public GameObject avatarPrefab;
+
+        private readonly Dictionary<string, GameObject> _avatars = new();
 
 
-    // SPAWN — when a user joins
-    void OnParticipantJoined(Participant p)
-    {
-        Debug.Log("[AvatarDemo] Spawn avatar for: " + p.userId);
+        private void Start()
+        {
+            participantManager.OnParticipantJoined += OnParticipantJoined;
+            participantManager.OnParticipantLeft += OnParticipantLeft;
+            participantManager.OnParticipantsUpdated += OnParticipantsUpdated;
+        }
 
-        if (avatars.ContainsKey(p.userId))
-            return; 
-        GameObject avatar = Instantiate(avatarPrefab, RandomSpawnPosition(), Quaternion.identity);
-        avatars[p.userId] = avatar;
-        UpdateAvatarVisual(p);
-    }
 
-    // despawn when a user leaves
-    void OnParticipantLeft(Participant p)
-    {
-        Debug.Log("[AvatarDemo] Despawn avatar for: " + p.userId);
+        private void OnParticipantJoined(Participant p)
+        {
+            Debug.Log("[AvatarDemo] Spawn avatar for: " + p.userId);
 
-        if (!avatars.ContainsKey(p.userId))
-            return;
+            if (_avatars.ContainsKey(p.userId))
+                return;
+            GameObject avatar = Instantiate(avatarPrefab, RandomSpawnPosition(), Quaternion.identity);
+            _avatars[p.userId] = avatar;
+            UpdateAvatarVisual(p);
+        }
 
-        Destroy(avatars[p.userId]);
-        avatars.Remove(p.userId);
-    }
+        private void OnParticipantLeft(Participant p)
+        {
+            Debug.Log("[AvatarDemo] Despawn avatar for: " + p.userId);
 
-    void OnParticipantsUpdated(List<Participant> list)
-    {
-        foreach (var p in list)
-            if (avatars.ContainsKey(p.userId))
+            if (!_avatars.TryGetValue(p.userId, out var avatar))
+                return;
+
+            Destroy(avatar);
+            _avatars.Remove(p.userId);
+        }
+
+        public void OnParticipantsUpdated(List<Participant> list)
+        {
+            foreach (var p in list.Where(p => _avatars.ContainsKey(p.userId)))
                 UpdateAvatarVisual(p);
-    }
-    void UpdateAvatarVisual(Participant p)
-    {
-        GameObject avatar = avatars[p.userId];
-
-        // Name tag
-        var tag = avatar.GetComponentInChildren<TextMesh>();
-        if (tag)
-            tag.text = p.displayName;
-
-        //Online/Offline
-        var renderer = avatar.GetComponentInChildren<Renderer>();
-        if (renderer)
-            renderer.material.color = p.isOnline ? Color.white : Color.gray;
-
-        //focus Bubble / Ghost Mode
-        bool sameGroup = (p.voiceGroupId == participantManager.LocalParticipant.voiceGroupId);
-
-        // example rule for non-group users become transparent/ghost
-        if (renderer)
-            renderer.material.color = sameGroup ? Color.white : new Color(1,1,1,0.25f);
-
-        // Example for  move avatar into bubble space
-        if (p.inBubbleSpace)
-        {
-            avatar.transform.localScale = Vector3.one * 0.8f;
-            avatar.transform.position = new Vector3(0, 0, 3f); // fake bubble position
         }
-        else
+
+        private void UpdateAvatarVisual(Participant p)
         {
-            avatar.transform.localScale = Vector3.one;
+            GameObject avatar = _avatars[p.userId];
+
+            var nameTag = avatar.GetComponentInChildren<TextMesh>();
+            if (nameTag)
+                nameTag.text = p.displayName;
+
+            var rendererComponent = avatar.GetComponentInChildren<Renderer>();
+            if (rendererComponent)
+                rendererComponent.material.color = p.isOnline ? Color.white : Color.gray;
+
+            var sameGroup = (p.voiceGroupId == participantManager.localParticipant.voiceGroupId);
+
+            if (rendererComponent)
+                rendererComponent.material.color = sameGroup ? Color.white : new Color(1, 1, 1, 0.25f);
+
+            if (p.inBubbleSpace)
+            {
+                avatar.transform.localScale = Vector3.one * 0.8f;
+                avatar.transform.position = new Vector3(0, 0, 3f); // fake bubble position
+            }
+            else
+            {
+                avatar.transform.localScale = Vector3.one;
+            }
         }
-    }
-// Random spawn position
-    Vector3 RandomSpawnPosition()
-    {
-        return new Vector3(
-            Random.Range(-2f, 2f),
-            0f,
-            Random.Range(-2f, 2f)
-        );
+
+        private Vector3 RandomSpawnPosition()
+        {
+            return new Vector3(
+                Random.Range(-2f, 2f),
+                0f,
+                Random.Range(-2f, 2f)
+            );
+        }
     }
 }

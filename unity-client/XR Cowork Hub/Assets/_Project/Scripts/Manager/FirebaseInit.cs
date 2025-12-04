@@ -7,7 +7,7 @@ namespace _Project.Scripts.Manager
 {
     public class FirebaseInit : MonoBehaviour
     {
-        void Start()
+        private void Start()
         {
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
             {
