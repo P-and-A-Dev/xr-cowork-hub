@@ -85,11 +85,9 @@ namespace _Project.Scripts.Configuration
                 SetHover(false);
             }
 
-            if (selected != null)
-            {
-                _selectedBaseAlpha = selected.color.a <= 0f ? 1f : selected.color.a;
-                SetSelected(false);
-            }
+            if (selected == null) return;
+            _selectedBaseAlpha = selected.color.a <= 0f ? 1f : selected.color.a;
+            SetSelected(false);
         }
 
         private void OnHoverEnter(HoverEnterEventArgs args)
