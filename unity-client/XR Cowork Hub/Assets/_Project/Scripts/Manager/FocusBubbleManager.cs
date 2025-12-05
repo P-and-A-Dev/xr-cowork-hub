@@ -57,4 +57,18 @@ public class FocusBubbleManager : MonoBehaviour
 
         Debug.Log("[FocusBubble] Bubble created successfully!");
     }
+    public async void LeaveFocusBubble()
+    {
+    string localUserId = participantManager.LocalParticipantId;
+    string roomId = participantManager.RoomId;
+
+    Debug.Log("[FocusBubble] Leaving focus bubble...");
+
+    // update the local participant to global group 0
+    List<string> users = new List<string> { localUserId };
+
+    await firestoreService.UpdateVoiceGroup(roomId, users, 0);
+
+    Debug.Log("[FocusBubble] You are now back in the global voice group.");
+    }
 }
