@@ -31,7 +31,7 @@ public class AgoraInit : MonoBehaviour
         options.autoSubscribeAudio.SetValue(true);
         options.publishMicrophoneTrack.SetValue(true);
 
-        // entrar no canal 
+        // entrar no canal
         rtcEngine.JoinChannel("", channelName, 0, options);
 
         Debug.Log("Agora voice initialized & joined channel");
@@ -46,3 +46,4 @@ public class AgoraInit : MonoBehaviour
         }
     }
 }*/
+

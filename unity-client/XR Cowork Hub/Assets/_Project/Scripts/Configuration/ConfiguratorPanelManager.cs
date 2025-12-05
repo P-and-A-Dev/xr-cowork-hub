@@ -50,12 +50,9 @@ namespace _Project.Scripts.Configuration
                     button.SetSelectedFromManager(false);
             }
 
-            // 🔥 Force-select first orb if none was marked as selected
-            if (_currentOrbSelected == null && _orbButtons.Count > 0)
-            {
-                _currentOrbSelected = _orbButtons[0];
-                _currentOrbSelected.SetSelectedFromManager(true);
-            }
+            if (_currentOrbSelected != null || _orbButtons.Count <= 0) return;
+            _currentOrbSelected = _orbButtons[0];
+            _currentOrbSelected.SetSelectedFromManager(true);
         }
 
         private void InitStyleGroup()
@@ -81,12 +78,9 @@ namespace _Project.Scripts.Configuration
                     button.SetSelectedFromManager(false);
             }
 
-            // 🔥 Force-select first style if none was marked as selected
-            if (_currentStyleSelected == null && _styleButtons.Count > 0)
-            {
-                _currentStyleSelected = _styleButtons[0];
-                _currentStyleSelected.SetSelectedFromManager(true);
-            }
+            if (_currentStyleSelected != null || _styleButtons.Count <= 0) return;
+            _currentStyleSelected = _styleButtons[0];
+            _currentStyleSelected.SetSelectedFromManager(true);
         }
 
         private void OnDestroy()

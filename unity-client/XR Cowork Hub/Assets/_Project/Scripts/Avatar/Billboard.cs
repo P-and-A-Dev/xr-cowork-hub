@@ -1,18 +1,21 @@
 using UnityEngine;
 
-public class Billboard : MonoBehaviour
+namespace _Project.Scripts.Avatar
 {
-    private Camera cam;
-
-    void Start()
+    public class Billboard : MonoBehaviour
     {
-        cam = Camera.main;
-    }
+        private Camera _cam;
 
-    void LateUpdate()
-    {
-        if (cam == null) return;
+        private void Start()
+        {
+            _cam = Camera.main;
+        }
 
-        transform.LookAt(transform.position + cam.transform.forward);
+        public void LateUpdate()
+        {
+            if (!_cam) return;
+
+            transform.LookAt(transform.position + _cam.transform.forward);
+        }
     }
 }

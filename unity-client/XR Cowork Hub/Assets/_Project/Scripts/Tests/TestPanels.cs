@@ -1,11 +1,15 @@
+using _Project.Scripts.Manager;
 using UnityEngine;
 
-public class PanelTest : MonoBehaviour
+namespace _Project.Scripts.Tests
 {
-    public PanelManager panelManager;
-
-    void Start()
+    public class PanelTest : MonoBehaviour
     {
-        panelManager.CreatePanel("note", "firrts panel");
+        public PanelManager panelManager;
+
+        private void Start()
+        {
+            panelManager.CreatePanel("note", "firrts panel");
+        }
     }
 }

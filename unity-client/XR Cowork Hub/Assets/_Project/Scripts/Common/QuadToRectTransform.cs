@@ -7,7 +7,7 @@ namespace _Project.Scripts.Common
         public RectTransform rectTransform;
         public Transform quadTransform;
 
-        void Update()
+        private void Update()
         {
             float w = rectTransform.rect.width;
             float h = rectTransform.rect.height;

@@ -1,22 +1,21 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace _Project.Scripts
 {
     public class XrPanel : MonoBehaviour
     {
         private static readonly int CornerRadius = Shader.PropertyToID("_CornerRadius");
-        private Material mat;
+        private Material _mat;
 
         [Range(0f, 1f)] public float cornerRadius = 0.15f;
 
-        void Start()
+        private void Start()
         {
-            mat = GetComponent<Renderer>().material;
+            _mat = GetComponent<Renderer>().material;
 
-            if (mat.HasProperty(CornerRadius))
+            if (_mat.HasProperty(CornerRadius))
             {
-                mat.SetFloat(CornerRadius, cornerRadius);
+                _mat.SetFloat(CornerRadius, cornerRadius);
             }
         }
     }
