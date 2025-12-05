@@ -25,6 +25,8 @@ namespace _Project.Scripts.Manager
         private string _userId;
         private Participant _localParticipant;
         public Participant localParticipant => _localParticipant;
+        public string LocalParticipantId => _userId;
+        public string RoomId => _roomId;
 
         private IEnumerator Start()
         {
