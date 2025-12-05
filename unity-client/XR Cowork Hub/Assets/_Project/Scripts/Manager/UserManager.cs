@@ -1,12 +1,11 @@
-using _Project.Scripts.NameTag;
 using UnityEngine;
+using NameTagController = _Project.Scripts.Avatar.NameTagController;
 
 namespace _Project.Scripts.Manager
 {
     public class UserManager : MonoBehaviour
     {
-        [Header("Settings")]
-        public GameObject userPrefab;
+        [Header("Settings")] public GameObject userPrefab;
         public Transform spawnPoint;
 
         public static UserManager Instance;
@@ -26,7 +25,7 @@ namespace _Project.Scripts.Manager
         /// <summary>
         /// Spawns a user at a specific position with a name.
         /// </summary>
-        public void SpawnUser(string userId, string userName, Vector3 position)
+        private void SpawnUser(string userId, string userName, Vector3 position)
         {
             if (userPrefab == null)
             {
