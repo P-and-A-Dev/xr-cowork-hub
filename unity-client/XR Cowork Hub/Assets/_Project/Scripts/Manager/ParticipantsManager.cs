@@ -28,9 +28,26 @@ namespace _Project.Scripts.Manager
 
         private IEnumerator Start()
         {
-            // PARTICIPANTS MANAGER DISABLED FOR TESTING
-            Debug.LogWarning("[ParticipantsManager] ParticipantsManager DISABLED for crash testing");
-            yield break;
+            if (firestore == null)
+            {
+                Debug.LogError("[ParticipantsManager] Critical: FirestoreService reference is missing! Please assign it in the Inspector.");
+                yield break;
+            }
+
+            Debug.Log("[ParticipantsManager] Waiting for FirestoreService...");
+            yield return new WaitUntil(() => firestore.IsInitialized);
+
+            try
+            {
+                LoadOrCreateUserId();
+                CreateOrUpdateLocalParticipant();
+                ListenToParticipants();
+                StartCoroutine(PresenceHeartbeat());
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ParticipantsManager] Error in Start: {ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         private void LoadOrCreateUserId()
