@@ -15,19 +15,33 @@ namespace _Project.Scripts.Agora
         private IRtcEngine _mRtc;
         public uint agoraUid;
 
-        public ParticipantManager participantManager;
+        [SerializeField] public ParticipantManager participantManager;
         private int _currentVoiceGroup;
         private bool _isSelfMuted;
 
         private void Start()
         {
-            userId = PlayerPrefs.GetString("userId", "user-" + Random.Range(0, 99999));
-            agoraUid = (uint)Mathf.Abs(userId.GetHashCode());
+            try
+            {
+                if (participantManager == null)
+                {
+                    Debug.LogError("[AgoraVoiceManager] Critical: ParticipantManager reference is missing! Please assign it in the Inspector.");
+                    return;
+                }
 
-            InitializeAgora();
-            JoinRoom();
+                userId = PlayerPrefs.GetString("userId", "user-" + Random.Range(0, 99999));
+                agoraUid = (uint)Mathf.Abs(userId.GetHashCode());
 
-            participantManager.OnParticipantsUpdated += OnParticipantsUpdated;
+                // AGORA DISABLED FOR TESTING
+                // InitializeAgora();
+                // JoinRoom();
+
+                participantManager.OnParticipantsUpdated += OnParticipantsUpdated;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[AgoraVoiceManager] Error in Start: {ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         private void InitializeAgora()
@@ -86,6 +100,8 @@ namespace _Project.Scripts.Agora
 
         private void ApplyVoiceRules(List<Participant> participants)
         {
+            if (_mRtc == null) return;
+
             foreach (var p in participants)
             {
                 if (p.userId == userId) continue;
@@ -101,6 +117,8 @@ namespace _Project.Scripts.Agora
 
         public void ToggleSelfMute()
         {
+            if (_mRtc == null) return;
+
             _isSelfMuted = !_isSelfMuted;
             _mRtc.MuteLocalAudioStream(_isSelfMuted);
 

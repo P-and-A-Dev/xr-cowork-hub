@@ -7,8 +7,12 @@ namespace _Project.Scripts.Manager
 {
     public class FirebaseInit : MonoBehaviour
     {
+        public static bool IsInitialized { get; private set; } = false;
+
         private void Start()
         {
+            Debug.Log("[FirebaseInit] Starting Firebase initialization...");
+            
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
             {
                 if (task.Result != DependencyStatus.Available)
@@ -35,6 +39,7 @@ namespace _Project.Scripts.Manager
                     {
                         Debug.Log("✔ Login Anonymous OK");
                         Debug.Log("UID: " + user.UserId);
+                        IsInitialized = true;
                     }
                     else
                     {

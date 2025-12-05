@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Firebase.Firestore;
@@ -9,11 +10,13 @@ namespace _Project.Scripts.Manager
     public class FirestoreService : MonoBehaviour
     {
         private FirebaseFirestore _db;
+        public bool IsInitialized { get; private set; } = false;
 
-        private void Awake()
+        private IEnumerator Start()
         {
-            _db = FirebaseFirestore.DefaultInstance;
-            Debug.Log("Firestore initialized.");
+            // FIRESTORE DISABLED FOR TESTING
+            Debug.LogWarning("[FirestoreService] Firestore initialization DISABLED for crash testing");
+            yield break;
         }
 
         private static void LogFirestoreError(string method, Exception ex)
@@ -25,6 +28,8 @@ namespace _Project.Scripts.Manager
 
         public Task SetDocument(string path, object data)
         {
+            if (!IsInitialized) return Task.CompletedTask;
+
             try
             {
                 DocumentReference docRef = _db.Document(path);
@@ -39,6 +44,8 @@ namespace _Project.Scripts.Manager
 
         public void ListenCollection<T>(string path, Action<List<T>> onChanged)
         {
+            if (!IsInitialized) return;
+
             try
             {
                 CollectionReference colRef = _db.Collection(path);
@@ -67,6 +74,8 @@ namespace _Project.Scripts.Manager
 
         public void ListenDocument<T>(string path, Action<T> onChanged)
         {
+            if (!IsInitialized) return;
+
             try
             {
                 DocumentReference docRef = _db.Document(path);
@@ -88,6 +97,8 @@ namespace _Project.Scripts.Manager
 
         public async Task UpdateVoiceGroup(string roomId, List<string> userIds, long newGroupId)
         {
+            if (!IsInitialized) return;
+
             try
             {
                 WriteBatch batch = _db.StartBatch();
