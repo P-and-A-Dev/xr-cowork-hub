@@ -49,34 +49,45 @@ namespace _Project.Scripts.Avatar
                 UpdateAvatarVisual(p);
         }
 
-        private void UpdateAvatarVisual(Participant p)
-        {
-            GameObject avatar = _avatars[p.userId];
+       private void UpdateAvatarVisual(Participant p)
+{
+    GameObject avatar = _avatars[p.userId];
 
-            var nameTag = avatar.GetComponentInChildren<TextMesh>();
-            if (nameTag)
-                nameTag.text = p.displayName;
+    // Update Name Tag
+    var nameTag = avatar.GetComponentInChildren<TextMesh>();
+    if (nameTag)
+        nameTag.text = p.displayName;
 
-            var rendererComponent = avatar.GetComponentInChildren<Renderer>();
-            if (rendererComponent)
-                rendererComponent.material.color = p.isOnline ? Color.white : Color.gray;
+    // Get mesh renderer
+    var rendererComponent = avatar.GetComponentInChildren<Renderer>();
+    if (rendererComponent == null) return;
 
-            var sameGroup = (p.voiceGroupId == participantManager.localParticipant.voiceGroupId);
+    Color baseColor = p.isOnline ? Color.white : Color.gray;
+    bool sameGroup = (p.voiceGroupId == participantManager.localParticipant.voiceGroupId);
 
-            if (rendererComponent)
-                rendererComponent.material.color = sameGroup ? Color.white : new Color(1, 1, 1, 0.25f);
+    if (!sameGroup)
+    {
+        // If NOT same voice group  apply ghost transparency
+        baseColor.a = 0.25f;
+    }
+    else
+    {
+       // If same voice group fully visible
+        baseColor.a = 1f;
+    }
 
-            if (p.inBubbleSpace)
-            {
-                avatar.transform.localScale = Vector3.one * 0.8f;
-                avatar.transform.position = new Vector3(0, 0, 3f); // fake bubble position
-            }
-            else
-            {
-                avatar.transform.localScale = Vector3.one;
-            }
-        }
+    rendererComponent.material.color = baseColor;
 
+    if (p.inBubbleSpace)
+    {
+        avatar.transform.localScale = Vector3.one * 0.8f;
+        avatar.transform.position = new Vector3(0, 0, 3f); 
+    }
+    else
+    {
+        avatar.transform.localScale = Vector3.one;
+    }
+}
         private Vector3 RandomSpawnPosition()
         {
             return new Vector3(
