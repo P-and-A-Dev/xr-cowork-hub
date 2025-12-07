@@ -22,9 +22,7 @@ namespace _Project.Scripts.Manager
             SpawnTestUser();
         }
 
-        /// <summary>
-        /// Spawns a user at a specific position with a name.
-        /// </summary>
+        // Spawns a user at a specific position with a name.
         private void SpawnUser(string userId, string userName, Vector3 position)
         {
             if (userPrefab == null)
@@ -47,11 +45,8 @@ namespace _Project.Scripts.Manager
                 Debug.LogWarning($"UserManager: No NameTagController found on user {userId}");
             }
         }
-
-        /// <summary>
-        /// Test method to spawn a dummy user.
-        /// Right-click on the component in Inspector to run this.
-        /// </summary>
+        // Test method to spawn a dummy user.
+        // Right-click on the component in Inspector to run this.
         [ContextMenu("Spawn Test User")]
         public void SpawnTestUser()
         {
