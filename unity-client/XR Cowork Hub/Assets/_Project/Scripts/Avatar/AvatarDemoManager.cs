@@ -28,6 +28,11 @@ namespace _Project.Scripts.Avatar
             if (_avatars.ContainsKey(p.userId))
                 return;
             GameObject avatar = Instantiate(avatarPrefab, RandomSpawnPosition(), Quaternion.identity);
+            var selectable = avatar.GetComponent<AvatarSelectable>();
+    if (selectable != null)
+    {
+        selectable.userId = p.userId;
+    }
             _avatars[p.userId] = avatar;
             UpdateAvatarVisual(p);
         }

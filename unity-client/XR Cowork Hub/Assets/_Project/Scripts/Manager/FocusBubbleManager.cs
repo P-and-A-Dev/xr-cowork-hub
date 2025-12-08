@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-
+using _Project.Scripts.Manager;
 public class FocusBubbleManager : MonoBehaviour
 {
     public static FocusBubbleManager Instance { get; private set; }
