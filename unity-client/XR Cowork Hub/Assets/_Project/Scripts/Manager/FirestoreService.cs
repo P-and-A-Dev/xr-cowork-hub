@@ -14,21 +14,30 @@ namespace _Project.Scripts.Manager
 
         private IEnumerator Start()
         {
-#if UNITY_EDITOR
-            // Skip Firestore in Editor
-            Debug.LogWarning("[FirestoreService] Firestore DISABLED in Editor. Will only work on device.");
-            IsInitialized = true; // Fake initialization for Editor
-            yield break;
-#endif
-
             Debug.Log("[FirestoreService] Waiting for FirebaseInit...");
-            yield return new WaitUntil(() => FirebaseInit.IsInitialized);
+
+            float timeout = 10f;
+            float timer = 0f;
+
+            while (!FirebaseInit.isInitialized && timer < timeout)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            if (!FirebaseInit.isInitialized)
+            {
+                Debug.LogError("[FirestoreService] FirebaseInit never initialized (timeout 10s).");
+                yield break;
+            }
+
+            Debug.Log("[FirestoreService] FirebaseInit.IsInitialized == true, trying Firestore...");
 
             try
             {
                 _db = FirebaseFirestore.DefaultInstance;
                 IsInitialized = true;
-                Debug.Log("Firestore initialized.");
+                Debug.Log("[FirestoreService] Firestore initialized.");
             }
             catch (Exception ex)
             {
@@ -45,11 +54,6 @@ namespace _Project.Scripts.Manager
 
         public Task SetDocument(string path, object data)
         {
-#if UNITY_EDITOR
-            Debug.Log($"[FirestoreService] EDITOR MODE: Would set document at {path}");
-            return Task.CompletedTask;
-#endif
-
             if (!IsInitialized) return Task.CompletedTask;
 
             try
@@ -66,10 +70,6 @@ namespace _Project.Scripts.Manager
 
         public void ListenCollection<T>(string path, Action<List<T>> onChanged)
         {
-#if UNITY_EDITOR
-            Debug.Log($"[FirestoreService] EDITOR MODE: Would listen to collection {path}");
-            return;
-#endif
 
             if (!IsInitialized) return;
 
@@ -101,10 +101,6 @@ namespace _Project.Scripts.Manager
 
         public void ListenDocument<T>(string path, Action<T> onChanged)
         {
-#if UNITY_EDITOR
-            Debug.Log($"[FirestoreService] EDITOR MODE: Would listen to document {path}");
-            return;
-#endif
 
             if (!IsInitialized) return;
 
@@ -129,10 +125,6 @@ namespace _Project.Scripts.Manager
 
         public async Task UpdateVoiceGroup(string roomId, List<string> userIds, long newGroupId)
         {
-#if UNITY_EDITOR
-            Debug.Log($"[FirestoreService] EDITOR MODE: Would update voice group to {newGroupId}");
-            return;
-#endif
 
             if (!IsInitialized) return;
 
