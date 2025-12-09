@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using _Project.Scripts.Manager;
+
 public class FocusBubbleManager : MonoBehaviour
 {
     public static FocusBubbleManager Instance { get; private set; }
@@ -12,6 +13,7 @@ public class FocusBubbleManager : MonoBehaviour
     [Header("Dependencies")]
     public FirestoreService firestoreService;
     public ParticipantManager participantManager;
+    public AgoraVoiceManager agoraVoiceManager;
 
     private void Awake()
     {
@@ -28,6 +30,7 @@ public class FocusBubbleManager : MonoBehaviour
         currentTargetParticipantId = userId;
         Debug.Log("[FocusBubble] Target selected: " + userId);
     }
+
     /*
      Creates a Focus Bubble between the local user and the selected participant.
      Uses FirestoreService.UpdateVoiceGroup() with a batch update.
@@ -55,20 +58,37 @@ public class FocusBubbleManager : MonoBehaviour
 
         await firestoreService.UpdateVoiceGroup(roomId, users, newVoiceGroupId);
 
+        participantManager.LocalParticipant.voiceGroupId = newVoiceGroupId;
+
+        if (agoraVoiceManager != null)
+        {
+            agoraVoiceManager.JoinGroup(newVoiceGroupId);
+        }
+
+        currentTargetParticipantId = null;
+
         Debug.Log("[FocusBubble] Bubble created successfully!");
     }
+
     public async void LeaveFocusBubble()
     {
-    string localUserId = participantManager.LocalParticipantId;
-    string roomId = participantManager.RoomId;
+        string localUserId = participantManager.LocalParticipantId;
+        string roomId = participantManager.RoomId;
 
-    Debug.Log("[FocusBubble] Leaving focus bubble...");
+        Debug.Log("[FocusBubble] Leaving focus bubble...");
 
-    // update the local participant to global group 0
-    List<string> users = new List<string> { localUserId };
+        // update the local participant to global group 0
+        List<string> users = new List<string> { localUserId };
 
-    await firestoreService.UpdateVoiceGroup(roomId, users, 0);
+        await firestoreService.UpdateVoiceGroup(roomId, users, 0);
+        participantManager.LocalParticipant.voiceGroupId = 0;
 
-    Debug.Log("[FocusBubble] You are now back in the global voice group.");
+        if (agoraVoiceManager != null)
+        {
+            agoraVoiceManager.JoinGroup(0);
+        }
+        currentTargetParticipantId = null;
+
+        Debug.Log("[FocusBubble] You are now back in the global voice group.");
     }
 }
